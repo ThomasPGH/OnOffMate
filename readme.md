@@ -1,1 +1,39 @@
-1234
+
+```
+OnOffMate - Ver. 1.000 (2025-05-13) - Hybernation, sleep, and power helper
+
+  OnOffMate [command]
+
+  Commands:
+    ? or /? h or -h or --help          Outputs this help
+    Hybernate                          Hybernates computer instantly
+    HybernateAfter <hs>                Hybernates computer after <hs> seconds
+    Lock                               Locks computer instantly
+    LockAfter <ls>                     Locks computer after <ls> seconds
+    Logoff                             Logs off current user
+    LogoffAfter <os>                   Logs off current user after <os> seconds
+    PowerOff                           Shuts down and powers off computer instantly
+    PowerOffAfter <ps>                 Shuts down and powers off computer in <ps> seconds
+    PowerOffMsgAfter <ps> <msg>        Shuts down and powers off computer in <ps> seconds
+                                       with message <msg>
+    Reboot                             Restarts/reboots computer instantly
+    RebootAfter <rs>                   Restarts/reboots computer after <rs> seconds
+    Restart                            Restarts/reboots computer instantly
+    RestartAfter <rs>                  Restarts/reboots computer after <rs> seconds
+    Shutdown                           Shuts down computer instantly
+    ShutdownAfter <ds>                 Shuts down computer in <ds> seconds
+    ShutdownMsgAfter <ds> <msg>        Shuts down computer in <ds> seconds with message
+                                       <msg>
+    Sleep                              Suspends (sleeps) computer instantly
+    SleepAfter <ss>                    Suspends (sleeps) computer after <ss> seconds
+    SleepWakeupAfter <ws>              Suspends (sleeps) computer instantly and wakes it
+                                       up again after <ws> seconds
+    SleepAfterWakeupAfter <ss> <ws>    Suspends (sleeps) computer in <ss> seconds and
+                                       wakes it up again after <ws> seconds
+    Suspend                            Suspends (sleeps) computer instantly
+    SuspendAfter <ss>                  Suspends (sleeps) computer after <ss> seconds
+    SuspendWakeupAfter <ws>            Suspends (sleeps) computer instantly and wakes it
+                                       up again after <ws> seconds
+    SuspendAfterWakeupAfter <ss> <ws>  Suspends (sleeps) computer in <ss> seconds and
+                                       wakes it up again after <ws> seconds
+```
