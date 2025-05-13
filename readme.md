@@ -3,7 +3,9 @@ OnOffMate is tiny Windows command-line utility that serves as hybernation, sleep
 
 It's a 64 bit application only.
 
-The reason why it's so small is because it doesn't link to the Windows runtime libraries. This is also the reason why it won't build for 32 bit Windows (some 64 bit operations are emulated by the runtime libaries but OnOffMate lacks implementations for those).
+The reason why it's so small is because it doesn't link to the Windows runtime libraries.
+
+This is also the reason why it won't build for 32 bit Windows. Some 64 bit operations are not available on 32 bit CPUs but are emulated by the Windows runtime libaries. However, OnOffMate lacks implementations for those (at least currently, and most likely always will).
 
 
 ```
