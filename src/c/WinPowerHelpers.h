@@ -15,7 +15,7 @@ When		Who				What
 ****************************************************************************************/
 
 /*
-	This file is maintained as part of OnOffMate. See https://github.com/thomaspgh/onoffmate .
+	This file is maintained as part of OnOffMate. See https://github.com/ThomasPGH/OnOffMate .
 */
 
 /*
