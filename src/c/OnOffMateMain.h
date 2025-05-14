@@ -1,7 +1,7 @@
 /****************************************************************************************
 
-	File		OnOffMateMain.c
-	Why:		Main source code file.
+	File		OnOffMateMain.h
+	Why:		Main header file.
 	OS:			Windows
 	Created:	2024-04-07
 
@@ -53,6 +53,13 @@ When		Who				What
 #define LENOFSTR(str) (sizeof (str) - 1)
 
 #include "./externC.h"
+
+#ifndef ONOFFMATE_VERSION_STRING
+#define ONOFFMATE_VERSION_STRING		"1.001"
+#endif
+#ifndef ONOFFMATE_VERSION_DATEST
+#define ONOFFMATE_VERSION_DATEST		"2025-05-14"
+#endif
 
 BEGIN_C_DECLS
 

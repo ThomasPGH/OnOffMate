@@ -50,6 +50,7 @@ When		Who				What
 	#endif
 */
 #include <stdint.h>
+#include "./OnOffMateMain.h"
 #include "./WinPowerHelpers.h"
 #include "./WinUTF8Console.h"
 
@@ -62,12 +63,13 @@ void outPutHelp (void)
 {
 	consoleOutU8	(
 		"\n"
-		"OnOffMate - Ver. 1.000 (2025-05-13) - Hybernation, sleep, and power helper\n"
+		"OnOffMate - Ver. " ONOFFMATE_VERSION_STRING " (" ONOFFMATE_VERSION_DATEST ") - Hybernation, sleep, and power helper\n"
 		"\n"
 		"  OnOffMate [command]\n"
 		"\n"
 		"  Commands:\n"
-		"    ? or /? h or -h or --help          Outputs this help\n"
+		"    ? or /? or h or -h or --help       Outputs this help\n"
+		"    Abort                              Aborts a task with a grace period\n"
 		"    Hybernate                          Hybernates computer instantly\n"
 		"    HybernateAfter <hs>                Hybernates computer after <hs> seconds\n"
 		"    Lock                               Locks computer instantly\n"
@@ -82,10 +84,10 @@ void outPutHelp (void)
 		"    RebootAfter <rs>                   Restarts/reboots computer after <rs> seconds\n"
 		"    Restart                            Restarts/reboots computer instantly\n"
 		"    RestartAfter <rs>                  Restarts/reboots computer after <rs> seconds\n"
-		"    Shutdown                           Shuts down computer instantly\n"
-		"    ShutdownAfter <ds>                 Shuts down computer in <ds> seconds\n"
-		"    ShutdownMsgAfter <ds> <msg>        Shuts down computer in <ds> seconds with message\n"
-		"                                       <msg>\n"
+		"    Shutdown                           Shuts down and powers off computer instantly\n"
+		"    ShutdownAfter <ds>                 Shuts down and powers off computer in <ds> seconds\n"
+		"    ShutdownMsgAfter <ds> <msg>        Shuts down and powers off computer in <ds> seconds\n"
+		"                                       with message <msg>\n"
 		"    Sleep                              Suspends (sleeps) computer instantly\n"
 		"    SleepAfter <ss>                    Suspends (sleeps) computer after <ss> seconds\n"
 		"    SleepWakeupAfter <ws>              Suspends (sleeps) computer instantly and wakes it\n"
@@ -98,9 +100,13 @@ void outPutHelp (void)
 		"                                       up again after <ws> seconds\n"
 		"    SuspendAfterWakeupAfter <ss> <ws>  Suspends (sleeps) computer in <ss> seconds and\n"
 		"                                       wakes it up again after <ws> seconds\n"
+		"\n"
+		"  The original behaviour of the Shutdown... commands (shutting down without power off) has\n"
+		"  been changed to be identical to the PowerOff... commands (shutting down and power off).\n"
 					);
 }
 
+const WCHAR wcActionAborting		[]	= L"Aborting shutdown/powerdown";
 const WCHAR wcActionHybernating		[]	= L"Hybernating workstation/computer";
 const WCHAR wcActionLoggingOff		[]	= L"Logging off";
 const WCHAR wcActionLocking			[]	= L"Locking workstation/computer";
@@ -109,6 +115,12 @@ const WCHAR wcActionShuttingDown	[]	= L"Shutting down workstation/computer";
 const WCHAR wcActionSuspending		[]	= L"Suspending (sleeping) workstation/computer";
 const WCHAR wcActionWakingUp		[]	= L"Waking up workstation/computer";
 const WCHAR wcActionPowerOff		[]	= L"Shutting down and switching off workstation/computer";
+
+void outputActionAborting (void)
+{
+	consoleOutW (wcActionAborting);
+	consoleOutW (L"...");
+}
 
 void outputActionHybernating (void)
 {
@@ -163,12 +175,18 @@ void ourmain (void)
 
 	AttachConsole (ATTACH_PARENT_PROCESS);
 	SetCodePageToUTF8 ();
+	SetConsoleEnableANSI ();
 
 	bool		bCmdComplete	= false;
 	WCHAR		*pwc			= NULL;
 	numArg		evalArg			= enArgInvalid;
 	uint64_t	n1, n2;
 
+	if (!ObtainPrivilege (SE_SHUTDOWN_NAME))
+	{
+		consoleOutW (L"Error obtaining privilege SE_SHUTDOWN_NAME.\n");
+		ExitProcess (EXIT_FAILURE);
+	}
 	if (nArgs)
 	{
 		int cArg = 0;
@@ -187,11 +205,17 @@ void ourmain (void)
 				bCmdComplete = true;
 				outPutHelp ();
 			} else
+			if	(isArgumentIgnoreCaseW (L"Abort", wcArgs [cArg]))
+			{
+				bCmdComplete = true;
+				outputActionAborting ();
+				AbortShutdownOrFail ();
+			} else
 			if	(isArgumentIgnoreCaseW (L"Hybernate", wcArgs [cArg]))
 			{
 				bCmdComplete = true;
 				outputActionHybernating ();
-				HybernateComputer ();
+				HybernateComputerOrFail ();
 			} else
 			if	(isArgumentIgnoreCaseW (L"HybernateAfter", wcArgs [cArg]))
 			{
@@ -199,14 +223,14 @@ void ourmain (void)
 				{
 					bCmdComplete = true;
 					waitForW (n1, wcActionHybernating);
-					HybernateComputer ();
+					HybernateComputerOrFail ();
 				}
 			} else
 			if	(isArgumentIgnoreCaseW (L"Logoff", wcArgs [cArg]))
 			{
 				bCmdComplete = true;
 				outputActionLoggingOff ();
-				Logoff ();
+				LogoffOrFail ();
 			} else
 			if	(isArgumentIgnoreCaseW (L"LogoffAfter", wcArgs [cArg]))
 			{
@@ -214,14 +238,14 @@ void ourmain (void)
 				{
 					bCmdComplete = true;
 					waitForW (n1, wcActionLoggingOff);
-					Logoff ();
+					LogoffOrFail ();
 				}
 			} else
 			if	(isArgumentIgnoreCaseW (L"Lock", wcArgs [cArg]))
 			{
 				bCmdComplete = true;
 				outputActionLocking ();
-				LockWorkStation ();
+				LockThisComputerOrFail ();
 			} else
 			if	(isArgumentIgnoreCaseW (L"LockAfter", wcArgs [cArg]))
 			{
@@ -229,14 +253,14 @@ void ourmain (void)
 				{
 					bCmdComplete = true;
 					waitForW (n1, wcActionLocking);
-					LockWorkStation ();
+					LockThisComputerOrFail ();
 				}
 			} else
 			if	(isArgumentIgnoreCaseW (L"PowerOff", wcArgs [cArg]))
 			{
 				bCmdComplete = true;
 				outputActionPowerOff ();
-				PowerOffComputer ();
+				PowerOffComputerOrFail ();
 			} else
 			if	(isArgumentIgnoreCaseW (L"PowerOffAfter", wcArgs [cArg]))
 			{
@@ -244,7 +268,7 @@ void ourmain (void)
 				{
 					bCmdComplete = true;
 					waitForW (n1, wcActionPowerOff);
-					PowerOffComputer ();
+					PowerOffComputerOrFail ();
 				}
 			} else
 			if	(isArgumentIgnoreCaseW (L"PowerOffMsgAfter", wcArgs [cArg]))
@@ -266,7 +290,7 @@ void ourmain (void)
 			{
 				bCmdComplete = true;
 				outputActionRestarting ();
-				RestartComputer ();
+				RestartComputerOrFail ();
 			} else
 			if	(		isArgumentIgnoreCaseW (L"RebootAfter",	wcArgs [cArg])
 					||	isArgumentIgnoreCaseW (L"RestartAfter",	wcArgs [cArg])
@@ -276,14 +300,14 @@ void ourmain (void)
 				{
 					bCmdComplete = true;
 					waitForW (n1, wcActionRestarting);
-					RestartComputer ();
+					RestartComputerOrFail ();
 				}
 			} else
 			if	(isArgumentIgnoreCaseW (L"Shutdown", wcArgs [cArg]))
 			{
 				bCmdComplete = true;
 				outputActionShuttingDown ();
-				ShutdownComputer ();
+				ShutdownComputerOrFail ();
 			} else
 			if	(isArgumentIgnoreCaseW (L"ShutdownAfter", wcArgs [cArg]))
 			{
@@ -293,7 +317,7 @@ void ourmain (void)
 					{
 						bCmdComplete = true;
 						waitForW (n1, wcActionShuttingDown);
-						ShutdownComputer ();
+						ShutdownComputerOrFail ();
 					} else
 						evalArg = enArgNumberTooBig;
 				}
@@ -317,7 +341,7 @@ void ourmain (void)
 			{
 				bCmdComplete = true;
 				outputActionSuspending ();
-				SuspendComputer ();
+				SuspendComputerOrFail ();
 			} else
 			if	(		isArgumentIgnoreCaseW (L"SleepAfter",	wcArgs [cArg])
 					||	isArgumentIgnoreCaseW (L"SuspendAfter",	wcArgs [cArg])
@@ -327,7 +351,7 @@ void ourmain (void)
 				{
 					bCmdComplete = true;
 					waitForW (n1, wcActionSuspending);
-					SuspendComputer ();
+					SuspendComputerOrFail ();
 				}
 			} else
 			if	(
@@ -344,8 +368,8 @@ void ourmain (void)
 						{
 							outputActionSuspending ();
 							consoleOutW (L" ");
-							outWaitForW (n1, wcActionWakingUp); consoleOutW (L" \n");
-							SuspendComputer ();
+							outWaitForW (n1, wcActionWakingUp);
+							SuspendComputerOrFail ();
 							WaitForSingleObject (h, INFINITE);
 							bCmdComplete = true;
 						} else
@@ -372,8 +396,8 @@ void ourmain (void)
 								if (h)
 								{
 									consoleOutW (L" ");
-									outWaitForW (n2, wcActionWakingUp); consoleOutW (L" \n");
-									SuspendComputer ();
+									outWaitForW (n2, wcActionWakingUp);
+									SuspendComputerOrFail ();
 									WaitForSingleObject (h, INFINITE);
 									bCmdComplete = true;
 								} else

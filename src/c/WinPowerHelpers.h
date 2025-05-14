@@ -98,11 +98,35 @@ When		Who				What
 EXTERN_C_BEGIN
 
 /*
+	ObtainPrivilegeSE_SHUTDOWN_NAME
+
+*/
+bool ObtainPrivilege (WCHAR *wcPrivilege)
+;
+
+/*
+	AbortShutdown
+
+*/
+bool AbortShutdown (void)
+;
+
+/*
+*/
+bool AbortShutdownOrFail (void)
+;
+
+/*
 	HybernateComputer
 
 	Hybernates the local machine.
 */
 bool HybernateComputer (void)
+;
+
+/*
+*/
+bool HybernateComputerOrFail (void)
 ;
 
 /*
@@ -114,11 +138,32 @@ bool PowerOffComputer (void)
 ;
 
 /*
+	PowerOffComputerOrFail
+
+*/
+bool PowerOffComputerOrFail (void)
+;
+
+/*
 	RestartComputer
 
 	Restarts the local machine.
 */
 bool RestartComputer (void)
+;
+
+/*
+	RestartComputerOrFail
+
+*/
+bool RestartComputerOrFail (void)
+;
+
+/*
+	ShutdownComputerOrFail
+
+*/
+bool ShutdownComputerOrFail (void)
 ;
 
 /*
@@ -130,12 +175,32 @@ bool SuspendComputer (void)
 ;
 
 /*
+*/
+bool SuspendComputerOrFail (void)
+;
+
+/*
 	Logoff
 
 	Shuts down all processes running in the logon session of the process that called this function.
 	Then it logs the user off.
 */
 bool Logoff (void)
+;
+
+/*
+*/
+bool LogoffOrFail (void)
+;
+
+/*
+*/
+bool LockThisComputer (void)
+;
+
+/*
+*/
+bool LockThisComputerOrFail (void)
 ;
 
 /*

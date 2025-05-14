@@ -69,6 +69,10 @@ When		Who				What
 #define USE_STRLEN							((size_t) -1)
 #endif
 
+#ifndef WINUTF8CONSOLE_OUTTHRESH
+#define WINUTF8CONSOLE_OUTTHRESH			(512)
+#endif
+
 EXTERN_C_BEGIN
 
 /*
@@ -80,6 +84,16 @@ EXTERN_C_BEGIN
 	false if CP_UTF8 is not installed.
 */
 bool SetCodePageToUTF8 (void)
+;
+
+/*
+	SetConsoleEnableANSI
+
+	Calls GetConsoleMode () and SetConsoleMode to set the console mode flag
+	ENABLE_VIRTUAL_TERMINAL_PROCESSING, which enables processing of ANSI escape
+	sequences.
+*/
+bool SetConsoleEnableANSI (void)
 ;
 
 /*
@@ -206,6 +220,13 @@ void outWaitForW (uint64_t seconds, const WCHAR *wcTaskText)
 		-> Outputs "Suspending (sleeping) computer in 0 second(s)..."
 */
 void waitForW (uint64_t seconds, const WCHAR *wcTaskText)
+;
+
+/*
+	consoleOutWinErrorText
+
+*/
+void consoleOutWinErrorText (DWORD dwError)
 ;
 
 EXTERN_C_END

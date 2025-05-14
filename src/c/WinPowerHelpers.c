@@ -44,6 +44,7 @@ When		Who				What
 #include <Windows.h>
 #include <powrprof.h>
 #include "./WinPowerHelpers.h"
+#include "./WinUTF8Console.h"
 
 #define WPWR_STATE_HYBERNATE		(true)
 #define WPWR_STATE_SUSPEND			(false)
@@ -58,30 +59,6 @@ DWORD	dwReason	=		SHTDN_REASON_MAJOR_OTHER
 						|	SHTDN_REASON_MINOR_OTHER
 						|	SHTDN_REASON_FLAG_PLANNED;
 
-
-bool HybernateComputer (void)
-{
-	BOOL b;
-
-	b = SetSuspendState (WPWR_STATE_HYBERNATE, false, false);
-	return b;
-}
-
-bool SuspendComputer (void)
-{
-	BOOL b;
-
-	b = SetSuspendState (WPWR_STATE_SUSPEND, false, false);
-	return b;
-}
-
-bool Logoff (void)
-{
-	bool b;
-
-	b = ExitWindowsEx (EWX_LOGOFF, 0);
-	return b;
-}
 
 bool ObtainPrivilege (WCHAR *wcPrivilege)
 {
@@ -108,63 +85,164 @@ bool ObtainPrivilege (WCHAR *wcPrivilege)
 	return b;
 }
 
+bool AbortShutdown (void)
+{
+	bool b = AbortSystemShutdownW (NULL);
+	return b;
+}
+
+bool AbortShutdownOrFail (void)
+{
+	bool b = AbortShutdown ();
+	if (b)
+	{
+		consoleOutW (L"\nShutdown/power off aborted.\n");
+		return true;
+	}
+	consoleOutWinErrorText (GetLastError ());
+	return false;
+}
+
+bool HybernateComputer (void)
+{
+	BOOL b = SetSuspendState (WPWR_STATE_HYBERNATE, false, false);
+	return b;
+}
+
+bool HybernateComputerOrFail (void)
+{
+	bool b = HybernateComputer ();
+	if (b)
+	{
+		consoleOutW (L"\nWorkstation/computer hybernated.\n");
+		return true;
+	}
+	consoleOutWinErrorText (GetLastError ());
+	return false;
+}
+
+bool SuspendComputer (void)
+{
+	BOOL b = SetSuspendState (WPWR_STATE_SUSPEND, false, false);
+	return b;
+}
+
+bool SuspendComputerOrFail (void)
+{
+	BOOL b = SetSuspendState (WPWR_STATE_SUSPEND, false, false);
+	if (b)
+	{
+		consoleOutW (L"\nWorkstation/computer suspended.\n");
+		return true;
+	}
+	consoleOutWinErrorText (GetLastError ());
+	return false;
+}
+
+bool Logoff (void)
+{
+	bool b = ExitWindowsEx (EWX_LOGOFF, 0);
+	return b;
+}
+
+bool LogoffOrFail (void)
+{
+	bool b = ExitWindowsEx (EWX_LOGOFF, 0);
+	if (b)
+	{
+		consoleOutW (L"\nCurrent user logged off.\n");
+		return true;
+	}
+	consoleOutWinErrorText (GetLastError ());
+	return false;
+}
+
+bool LockThisComputer (void)
+{
+	bool b = LockWorkStation ();
+	return b;
+}
+
+bool LockThisComputerOrFail (void)
+{
+	bool b = LockThisComputer ();
+	if (b)
+	{
+		consoleOutW (L"\nWorkstation/computer locked.\n");
+		return true;
+	}
+	consoleOutWinErrorText (GetLastError ());
+	return false;
+}
+
 bool PowerOffComputer (void)
 {
-	bool b	= false;
+	bool b = ExitWindowsEx (EWX_POWEROFF | EWX_FORCEIFHUNG, dwReason);
+	return b;
+}
 
-	if (ObtainPrivilege (SE_SHUTDOWN_NAME))
+bool PowerOffComputerOrFail (void)
+{
+	bool b = PowerOffComputer ();
+	if (b)
 	{
-		b = ExitWindowsEx (EWX_POWEROFF | EWX_FORCEIFHUNG, dwReason);
+		consoleOutW (L"\nFull shutdown of workstation/computer initiated.\n");
+		return true;
 	}
-   return b;
+	consoleOutWinErrorText (GetLastError ());
+	return false;
 }
 
 bool PowerOffComputerWithMsgAndGracePeriodW (WCHAR *wcMsg, DWORD dwGracePeriod)
 {
-	bool b	= false;
-
-	if (ObtainPrivilege (SE_SHUTDOWN_NAME))
-	{
-		b = InitiateSystemShutdownExW	(
+	bool b = InitiateSystemShutdownExW	(
 				NULL, wcMsg, dwGracePeriod, WPWR_DONT_FORCE_APPS_CLOSED, WPWR_JUST_SHUTDOWN, dwReason
 										);
-	}
    return b;
 }
 
 bool RestartComputer (void)
 {
-	bool b	= false;
+	bool b = ExitWindowsEx (EWX_REBOOT | EWX_FORCEIFHUNG, dwReason);
+	return b;
+}
 
-	if (ObtainPrivilege (SE_SHUTDOWN_NAME))
+bool RestartComputerOrFail (void)
+{
+	bool b = RestartComputer ();
+	if (b)
 	{
-		b = ExitWindowsEx (EWX_REBOOT | EWX_FORCEIFHUNG, dwReason);
+		consoleOutW (L"\nRestart of workstation/computer initiated.\n");
+		return true;
 	}
-   return b;
+	consoleOutWinErrorText (GetLastError ());
+	return false;
 }
 
 bool ShutdownComputer (void)
 {
-	bool b	= false;
+	bool b = ExitWindowsEx (EWX_SHUTDOWN | EWX_FORCEIFHUNG, dwReason);
+	return b;
+}
 
-	if (ObtainPrivilege (SE_SHUTDOWN_NAME))
+bool ShutdownComputerOrFail (void)
+{
+	bool b = ShutdownComputer ();
+	if (b)
 	{
-		b = ExitWindowsEx (EWX_SHUTDOWN | EWX_FORCEIFHUNG, dwReason);
+		consoleOutW (L"\nFull shutdown of workstation/computer initiated.\n");
+		return true;
 	}
-   return b;
+	consoleOutWinErrorText (GetLastError ());
+	return false;
 }
 
 bool ShutdownComputerWithMsgAndGracePeriodW (WCHAR *wcMsg, DWORD dwGracePeriod)
 {
-	bool b	= false;
-
-	if (ObtainPrivilege (SE_SHUTDOWN_NAME))
-	{
-		b = InitiateSystemShutdownExW	(
+	bool b = InitiateSystemShutdownExW	(
 				NULL, wcMsg, dwGracePeriod, WPWR_DONT_FORCE_APPS_CLOSED, WPWR_JUST_SHUTDOWN, dwReason
 										);
-	}
-   return b;
+	return b;
 }
 
 /*

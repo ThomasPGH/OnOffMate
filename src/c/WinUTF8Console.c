@@ -62,6 +62,28 @@ bool SetCodePageToUTF8 (void)
 	return false;
 }
 
+/*
+	Taken from Cunilog. See https://github.com/cunilog .
+	(Well, actually, it's the other way round. Maintenance of this
+	function has been moved from here to Cunilog.)
+*/
+bool SetConsoleEnableANSI (void)
+{
+	HANDLE hConsole = GetStdHandle (STD_OUTPUT_HANDLE);
+	if (INVALID_HANDLE_VALUE != hConsole)
+	{
+		DWORD	dwMode;
+		BOOL b = GetConsoleMode (hConsole, &dwMode);
+		if (b)
+		{
+			dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+			b = SetConsoleMode (hConsole, dwMode);
+			return b;
+		}
+	}
+	return false;
+}
+
 void consoleOutW (const WCHAR *wcText)
 {
 	DWORD	len		= strlenW (wcText);
@@ -267,4 +289,55 @@ void waitForW (uint64_t seconds, const WCHAR *wcTaskText)
 	consoleOutW (L"\33[2K\r");
 	consoleOutW (wcTaskText);
 	consoleOutW (L"...");
+}
+
+bool consoleOutWinErrorTextW (DWORD dwError)
+{
+	DWORD	dwRet;
+	WCHAR	wcErrText [WINUTF8CONSOLE_OUTTHRESH];
+
+	// See
+	//	https://docs.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-multibytetowidechar .
+	//iReqSize = MultiByteToWideChar (CP_UTF8, 0, lpRootPathName, -1, NULL, 0);
+
+	// See
+	//	https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-formatmessagew .
+	dwRet = FormatMessageW	(
+					FORMAT_MESSAGE_FROM_SYSTEM
+				|	FORMAT_MESSAGE_ARGUMENT_ARRAY
+				|	FORMAT_MESSAGE_IGNORE_INSERTS,
+				NULL,
+				dwError,
+				0,
+				wcErrText,
+				WINUTF8CONSOLE_OUTTHRESH - 1,
+				NULL
+							);
+	if (dwRet && dwRet > 2)
+    {	// Remove the line ending (CR/LF).
+		wcErrText [dwRet - 2] = L'\0';
+		consoleOutW (L"\"");
+		consoleOutW (wcErrText);
+		consoleOutW (L"\"");
+		return true;
+    }
+	return false;
+}
+
+void consoleOutWinErrorText (DWORD dwError)
+{
+	WCHAR	wcErr [64];
+	WCHAR	wcHex [16];
+
+	wstr_from_uint64 (wcErr, dwError);
+	consoleOutW (L"\nOperation failed: ");
+	consoleOutWinErrorTextW (dwError);
+	consoleOutW (L" (Error ");
+	consoleOutW (wcErr);
+	consoleOutW (L", ");
+	asc_hex_from_dword_W (wcHex, dwError);
+	wcHex [8] = '\0';
+	consoleOutW (wcHex);
+	consoleOutW (L"h)\n");
+	//consoleOutW (L"\n");
 }

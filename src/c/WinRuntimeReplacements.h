@@ -174,6 +174,16 @@ bool ubf_uint64_from_strW (uint64_t * ui, const WCHAR *wcStr)
 size_t wstr_from_uint64 (WCHAR* result, uint64_t ui64)
 ;
 
+/*
+	asc_hex_from_dword_W
+
+	Writes the 8 characters representing the hexadecimal notation of the 32 bit data
+	ui to the location pc points to. The function writes exactly 8 ASCII characters
+	to pc. No NUL terminator is written.
+*/
+void asc_hex_from_dword_W (WCHAR *pc, uint32_t ui)
+;
+
 EXTERN_C_END
 
 #endif														// Of #ifndef WINRUNTIMEREPLACEMENTS_H.

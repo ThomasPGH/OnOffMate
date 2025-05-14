@@ -247,3 +247,21 @@ size_t wstr_from_uint64 (WCHAR* result, uint64_t ui64)
 	}
 	return ((size_t) (r - result));
 }
+
+// Used by the hex conversion functions. No NUL-terminator is stored.
+//DISABLE_WARNING_ARRAY_TOO_SMALL_FOR_NUL_TERMINATOR ()
+static char				hexASCIIu [16]		= "0123456789ABCDEF";
+static char				hexASCIIl [16]		= "0123456789abcdef";
+//DEFAULT_WARNING_ARRAY_TOO_SMALL_FOR_NUL_TERMINATOR ()
+
+void asc_hex_from_dword_W (WCHAR *pc, uint32_t ui)
+{
+	*pc ++	= hexASCIIu [((ui & 0xF0000000) >> 28) & 0x0F];
+	*pc ++	= hexASCIIu [((ui & 0x0F000000) >> 24) & 0x0F];
+	*pc ++	= hexASCIIu [((ui & 0x00F00000) >> 20) & 0x0F];
+	*pc ++	= hexASCIIu [((ui & 0x000F0000) >> 16) & 0x0F];
+	*pc ++	= hexASCIIu [((ui & 0x0000F000) >> 12) & 0x0F];
+	*pc ++	= hexASCIIu [((ui & 0x00000F00) >>  8) & 0x0F];
+	*pc ++	= hexASCIIu [((ui & 0x000000F0) >>  4) & 0x0F];
+	*pc		= hexASCIIu [((ui & 0x0000000F))];
+}
