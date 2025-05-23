@@ -1,6 +1,6 @@
 # OnOffMate
 
-OnOffMate is tiny Windows command-line utility that serves as hybernation, sleep, and power helper.
+OnOffMate is a tiny Windows command-line utility that serves as hybernation, sleep, and power helper.
 
 It's a 64 bit application only.
 
