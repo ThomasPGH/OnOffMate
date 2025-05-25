@@ -10,12 +10,14 @@ This is also the reason why it won't build for 32 bit Windows. Some 64 bit opera
 
 
 ```
-OnOffMate - Ver. 1.000 (2025-05-13) - Hybernation, sleep, and power helper
+OnOffMate - OnOffMate - Ver. 1.002 (2025-05-25) - Hybernation, sleep, and power helper
 
   OnOffMate [command]
 
   Commands:
-    ? or /? h or -h or --help          Outputs this help
+    ? or /? or h or -h or --help       Outputs this help
+    /a                                 Aborts a task with a grace period
+    Abort                              Aborts a task with a grace period
     Hybernate                          Hybernates computer instantly
     HybernateAfter <hs>                Hybernates computer after <hs> seconds
     Lock                               Locks computer instantly
@@ -30,10 +32,10 @@ OnOffMate - Ver. 1.000 (2025-05-13) - Hybernation, sleep, and power helper
     RebootAfter <rs>                   Restarts/reboots computer after <rs> seconds
     Restart                            Restarts/reboots computer instantly
     RestartAfter <rs>                  Restarts/reboots computer after <rs> seconds
-    Shutdown                           Shuts down computer instantly
-    ShutdownAfter <ds>                 Shuts down computer in <ds> seconds
-    ShutdownMsgAfter <ds> <msg>        Shuts down computer in <ds> seconds with message
-                                       <msg>
+    Shutdown                           Shuts down and powers off computer instantly
+    ShutdownAfter <ds>                 Shuts down and powers off computer in <ds> seconds
+    ShutdownMsgAfter <ds> <msg>        Shuts down and powers off computer in <ds> seconds
+                                       with message <msg>
     Sleep                              Suspends (sleeps) computer instantly
     SleepAfter <ss>                    Suspends (sleeps) computer after <ss> seconds
     SleepWakeupAfter <ws>              Suspends (sleeps) computer instantly and wakes it
@@ -46,4 +48,14 @@ OnOffMate - Ver. 1.000 (2025-05-13) - Hybernation, sleep, and power helper
                                        up again after <ws> seconds
     SuspendAfterWakeupAfter <ss> <ws>  Suspends (sleeps) computer in <ss> seconds and
                                        wakes it up again after <ws> seconds
+    Ver                                Prints the version info
+    Version                            Prints the version info
+    WakeOnLAN <brip> <mac> [-f6]       Wakes the host with broadcast IP <brip> and MAC
+                                       address <mac>. For example, if the IP address of the
+                                       host to wake up is 192.168.0.97 and the subnet mask
+                                       is 255.255.255.0, use 192.168.0.255 for <brip>.
+                                       Argument -f6 forces IPv6 even if <brip> is IPv4.
+
+  The original behaviour of the Shutdown... commands (shutting down without power off) has
+  been changed to be identical to the PowerOff... commands (shutting down and power off).
 ```
