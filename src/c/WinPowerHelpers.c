@@ -246,7 +246,7 @@ bool ShutdownComputerWithMsgAndGracePeriodW (WCHAR *wcMsg, DWORD dwGracePeriod)
 }
 
 /*
-	Unused for now.
+	Unused for now. It's the callback function for SetWaitableTimer ().
 */
 static void Ptimerapcroutine(
   /* [in, optional] */ LPVOID lpArgToCompletionRoutine,
@@ -273,7 +273,7 @@ bool WakeupComputerAfter (DWORD dwSeconds)
 		{
 			LARGE_INTEGER li;
 			li.QuadPart = ift;
-			if (SetWaitableTimer (hTimer, &li, 0, Ptimerapcroutine, NULL, TRUE))
+			if (SetWaitableTimer (hTimer, &li, 0, NULL, NULL, TRUE))
 			{
 				dw = GetLastError ();
 				if (ERROR_NOT_SUPPORTED == dw)

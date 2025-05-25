@@ -30,6 +30,9 @@
     <ClInclude Include="..\..\..\..\src\c\WinUTF8Console.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\c\WakeOnLAN.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\c\OnOffMateMain.c">
@@ -42,6 +45,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\c\WinUTF8Console.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\c\WakeOnLAN.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

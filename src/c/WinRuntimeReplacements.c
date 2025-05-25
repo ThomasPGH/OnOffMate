@@ -54,6 +54,11 @@ When		Who				What
 #include <stdint.h>
 #include "./WinRuntimeReplacements.h"
 
+bool isDigitU (unsigned char c)
+{
+	return c >= (unsigned char) '0' && c <= (unsigned char) '9';
+}
+
 bool isDigitW (WCHAR wc)
 {
 	return wc >= L'0' && wc <= L'9';
@@ -75,6 +80,24 @@ void *memcpyU (void *dest, const void *src, size_t len)
 	}
 	return dest;
 }
+
+#ifdef THIS_IS_ONOFFMATE
+	#pragma optimize ("", off)
+#endif
+
+void *memsetU (void *dest, uint8_t ch, size_t len)
+{
+	char *d = dest;
+	while (len--)
+	{
+		*d++ = ch;
+	}
+	return dest;
+}
+
+#ifdef THIS_IS_ONOFFMATE
+	#pragma optimize ("", on)
+#endif
 
 int memcmpU (const void *str1, const void *str2, size_t count)
 {
@@ -102,9 +125,9 @@ int stricmpW (const unsigned short *wc1, const unsigned short *wc2, size_t count
 	return 0;
 }
 
-DWORD strlenW (const WCHAR *ch)
+size_t strlenW (const WCHAR *ch)
 {
-	DWORD	dwLen = 0;
+	size_t	dwLen = 0;
 
 	while (*ch)
 	{
@@ -114,9 +137,9 @@ DWORD strlenW (const WCHAR *ch)
 	return dwLen;
 }
 
-DWORD strlenU (const char *sz)
+size_t strlenU (const char *sz)
 {
-	DWORD	dwLen = 0;
+	size_t	dwLen = 0;
 
 	while (*sz)
 	{
@@ -128,7 +151,7 @@ DWORD strlenU (const char *sz)
 
 WCHAR *strrchrW (WCHAR *pwc, WCHAR wc)
 {
-	DWORD	dwLen	= strlenW (pwc);
+	size_t	dwLen	= strlenW (pwc);
 	WCHAR	*wco	= pwc + dwLen;
 
 	while (dwLen --)
@@ -264,4 +287,47 @@ void asc_hex_from_dword_W (WCHAR *pc, uint32_t ui)
 	*pc ++	= hexASCIIu [((ui & 0x00000F00) >>  8) & 0x0F];
 	*pc ++	= hexASCIIu [((ui & 0x000000F0) >>  4) & 0x0F];
 	*pc		= hexASCIIu [((ui & 0x0000000F))];
+}
+
+/*
+	Nicked from Cunilog.
+*/
+size_t ubf_octet_from_hex (unsigned char *o, const char *chHx)
+{
+	unsigned char	c1;
+	unsigned char	c0;
+	
+	c1 = ubf_value_of_ASCII_hex (*chHx);
+	++ chHx;
+	if (UBF_INVALID_HEX_CHAR == c1)
+	{
+		return 0;
+	}
+	ubf_assert (0 == ('\xF0' & c1));
+	c0 = ubf_value_of_ASCII_hex (*chHx);
+	if (UBF_INVALID_HEX_CHAR == c0)
+	{
+		*o = c1;
+		return 1;
+	}
+	c1 <<= 4;
+	ubf_assert (0 == ('\xF0' & c0));
+	c1 += c0;
+	*o = c1;
+	return 2;
+}
+
+int reqUTF8size (const WCHAR *wcU16)
+{
+	return WideCharToMultiByte (CP_UTF8, 0, wcU16, -1, NULL, 0, NULL, NULL);
+}
+
+int UTF8_from_WinU16 (char *chU8, int sizeU8, const WCHAR *wcU16)
+{
+	return WideCharToMultiByte (CP_UTF8, 0, wcU16, -1, chU8, sizeU8, NULL, NULL);
+}
+
+int UTF8_from_WinU16l (char *chU8, int sizeU8, const WCHAR *wcU16, int lenU16)
+{
+	return WideCharToMultiByte (CP_UTF8, 0, wcU16, lenU16, chU8, sizeU8, NULL, NULL);
 }

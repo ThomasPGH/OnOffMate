@@ -86,13 +86,13 @@ bool SetConsoleEnableANSI (void)
 
 void consoleOutW (const WCHAR *wcText)
 {
-	DWORD	len		= strlenW (wcText);
+	size_t	len		= strlenW (wcText);
 	HANDLE	hstdout	= GetStdHandle (STD_OUTPUT_HANDLE);
 
 	#ifdef _DEBUG
-		BOOL b = WriteConsoleW (hstdout, wcText, len, NULL, NULL);
+		BOOL b = WriteConsoleW (hstdout, wcText, (DWORD) len, NULL, NULL);
 	#else
-		WriteConsoleW (hstdout, wcText, len, NULL, NULL);
+		WriteConsoleW (hstdout, wcText, (DWORD) len, NULL, NULL);
 		// Only supports UTF-8:
 		//WriteFile (hstdout, wcText, sizeof (WCHAR) * len, NULL, NULL);
 	#endif
@@ -100,14 +100,14 @@ void consoleOutW (const WCHAR *wcText)
 
 void consoleOutU8 (const char *szTextU8)
 {
-	DWORD	len		= (DWORD) strlenU (szTextU8);
+	size_t	len		= (DWORD) strlenU (szTextU8);
 	HANDLE	hstdout	= GetStdHandle (STD_OUTPUT_HANDLE);
 
 	#ifdef _DEBUG
-		BOOL b = WriteFile (hstdout, szTextU8, len, NULL, NULL);
+		BOOL b = WriteFile (hstdout, szTextU8, (DWORD) len, NULL, NULL);
 	#else
 		// Only supports UTF-8:
-		WriteFile (hstdout, szTextU8, len, NULL, NULL);
+		WriteFile (hstdout, szTextU8, (DWORD) len, NULL, NULL);
 	#endif
 }
 

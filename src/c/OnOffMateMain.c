@@ -52,7 +52,9 @@ When		Who				What
 #include <stdint.h>
 #include "./OnOffMateMain.h"
 #include "./WinPowerHelpers.h"
+#include "./WinRuntimeReplacements.h"
 #include "./WinUTF8Console.h"
+#include "./WakeOnLAN.h"
 
 /*
 	outPutHelp
@@ -63,12 +65,13 @@ void outPutHelp (void)
 {
 	consoleOutU8	(
 		"\n"
-		"OnOffMate - Ver. " ONOFFMATE_VERSION_STRING " (" ONOFFMATE_VERSION_DATEST ") - Hybernation, sleep, and power helper\n"
+		"OnOffMate - " ONOFFMATE_VERSION_STRTOT " - Hybernation, sleep, and power helper\n"
 		"\n"
 		"  OnOffMate [command]\n"
 		"\n"
 		"  Commands:\n"
 		"    ? or /? or h or -h or --help       Outputs this help\n"
+		"    /a                                 Aborts a task with a grace period\n"
 		"    Abort                              Aborts a task with a grace period\n"
 		"    Hybernate                          Hybernates computer instantly\n"
 		"    HybernateAfter <hs>                Hybernates computer after <hs> seconds\n"
@@ -100,6 +103,13 @@ void outPutHelp (void)
 		"                                       up again after <ws> seconds\n"
 		"    SuspendAfterWakeupAfter <ss> <ws>  Suspends (sleeps) computer in <ss> seconds and\n"
 		"                                       wakes it up again after <ws> seconds\n"
+		"    Ver                                Prints the version info\n"
+		"    Version                            Prints the version info\n"
+		"    WakeOnLAN <brip> <mac> [-f6]       Wakes the host with broadcast IP <brip> and MAC\n"
+		"                                       address <mac>. For example, if the IP address of the\n"
+		"                                       host to wake up is 192.168.0.97 and the subnet mask\n"
+		"                                       is 255.255.255.0, use 192.168.0.255 for <brip>.\n"
+		"                                       Argument -f6 forces IPv6 even if <brip> is IPv4.\n"
 		"\n"
 		"  The original behaviour of the Shutdown... commands (shutting down without power off) has\n"
 		"  been changed to be identical to the PowerOff... commands (shutting down and power off).\n"
@@ -177,10 +187,15 @@ void ourmain (void)
 	SetCodePageToUTF8 ();
 	SetConsoleEnableANSI ();
 
-	bool		bCmdComplete	= false;
-	WCHAR		*pwc			= NULL;
-	numArg		evalArg			= enArgInvalid;
-	uint64_t	n1, n2;
+	bool			bCmdComplete						= false;
+	WCHAR			*pwc								= NULL;
+	numArg			evalArg								= enArgInvalid;
+	uint64_t		n1, n2;
+
+	wchar_t			wzIP4asIP6 [U_WAKEONLAN_IPV6_SIZ]	=	U_WAKEONLAN_IPV6V4_PFXW
+															// Avoids memset ().
+															L"12345678901234567890";
+	const wchar_t	*wzIP								= wzIP4asIP6;
 
 	if (!ObtainPrivilege (SE_SHUTDOWN_NAME))
 	{
@@ -205,7 +220,10 @@ void ourmain (void)
 				bCmdComplete = true;
 				outPutHelp ();
 			} else
-			if	(isArgumentIgnoreCaseW (L"Abort", wcArgs [cArg]))
+			if	(
+						isArgumentIgnoreCaseW (L"/a", wcArgs [cArg])
+					||	isArgumentIgnoreCaseW (L"Abort", wcArgs [cArg])
+				)
 			{
 				bCmdComplete = true;
 				outputActionAborting ();
@@ -408,6 +426,89 @@ void ourmain (void)
 					} else
 						evalArg = enArgNumberTooBig;
 				}
+			} else
+			if	(
+						isArgumentIgnoreCaseW (L"Ver",		wcArgs [cArg])
+					||	isArgumentIgnoreCaseW (L"Version",	wcArgs [cArg])
+				)
+			{
+				consoleOutU8 (ONOFFMATE_VERSION_STRTOT);
+				consoleOutU8 ("\n");
+				bCmdComplete = true;
+			}
+			if (isArgumentIgnoreCaseW (L"WakeOnLAN", wcArgs [cArg]))
+			{
+				callWSAStartup ();
+				evalArg = enArgMissingAfter;
+				enum eWOLret wol = wolretSyntaxHst;
+				wchar_t wcMAC [U_WAKEONLAN_MAC_SIZ];
+				wchar_t *maca = NULL;
+				wchar_t *host = nextArgumentW (&cArg, nArgs, wcArgs);
+				if (host)
+				{
+					if (isGoodIPv4stringW (host) || isGoodIPv6stringW (host))
+					{
+						wol = wolretMissing;
+						maca = nextArgumentW (&cArg, nArgs, wcArgs);
+						if (maca)
+						{
+							bool bForceV6 = false;
+							wchar_t *wcForceV6 = nextArgumentW (&cArg, nArgs, wcArgs);
+							if (wcForceV6)
+							{
+								if	(
+											isArgumentIgnoreCaseW (L"-f6", wcForceV6)
+										&&	isGoodIPv4stringW (host)
+									)
+								{
+									memcpyU (wzIP4asIP6 + U_WAKEONLAN_IPV6V4_PFX_LEN, host, sizeof (wchar_t) * (1 + strlenW (host)));
+									bForceV6 = true;
+								} else
+								{
+									wzIP = host;
+									-- cArg;
+								}
+							} else
+								wzIP = host;
+							char *szErrPosition;
+							wol = wakeOnLAN_W (wzIP, maca, bForceV6, &szErrPosition);
+							makeUnifiedMACaddress (wcMAC, maca);
+							bCmdComplete = true;
+						}
+					}
+					switch (wol)
+					{
+						case wolretOk:
+							consoleOutW (L"Magic WOL (Wake on LAN) packet sent to \"");
+							consoleOutW (wzIP);
+							consoleOutW (L"\" with MAC address \"");
+							consoleOutW (wcMAC);
+							consoleOutW (L"\" on UDP port 9. ");
+							break;
+						case wolretSyntaxMAC:
+							consoleOutW (L"Syntax error: \"");
+							consoleOutW (maca);
+							consoleOutW (L"\" is not a valid MAC address. ");
+							bCmdComplete = true;
+							break;
+						case wolretSyntaxHst:
+							consoleOutW (L"Syntax error: \"");
+							consoleOutW (host);
+							consoleOutW (L"\" is not a valid broadcast IP address. ");
+							bCmdComplete = true;
+							break;
+						case wolretErrSend:
+							consoleOutW (L"Error sending magic WOL (Wake on LAN) packet to \"");
+							consoleOutW (wzIP);
+							consoleOutW (L"\" with MAC address \"");
+							makeUnifiedMACaddress (wcMAC, maca);
+							consoleOutW (wcMAC);
+							consoleOutW (L"\" on UDP port 9. ");
+							break;
+						case wolretMissing:
+							break;
+					}
+				}
 			}
 			if (bCmdComplete)
 			{
@@ -416,8 +517,9 @@ void ourmain (void)
 					consoleOutW (L"Ignored argument(s):");
 				while (cArg < nArgs)
 				{
-					consoleOutW (L" ");
+					consoleOutW (L" \"");
 					consoleOutW (wcArgs [cArg]);
+					consoleOutW (L"\"");
 					++ cArg;
 				}
 				consoleOutW (L"\n");
@@ -440,6 +542,9 @@ void ourmain (void)
 					case enArgTaskError:
 						consoleOutU8 ("Error performing task.");
 						break;
+					case enArgMissingAfter:
+						consoleOutU8 ("Syntax error. Argument/parameter missing after: \"");
+						break;
 					default:
 						consoleOutU8 ("Syntax error. Argument/parameter missing for \"");
 				}
@@ -453,5 +558,6 @@ void ourmain (void)
 	{
 		outPutHelp ();
 	}
+	CallWSACleanup ();
 	ExitProcess (EXIT_SUCCESS);
 }

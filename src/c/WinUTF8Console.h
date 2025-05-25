@@ -188,7 +188,8 @@ enum enargtst
 	enArgIsNumber,
 	enArgNumberTooBig,
 	enArgNotNumber,
-	enArgTaskError
+	enArgTaskError,
+	enArgMissingAfter
 };
 typedef enum emargtest	numArg;
 
