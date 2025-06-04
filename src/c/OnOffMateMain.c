@@ -65,46 +65,60 @@ void outPutHelp (void)
 {
 	consoleOutU8	(
 		"\n"
-		"OnOffMate - " ONOFFMATE_VERSION_STRTOT " - Hybernation, sleep, and power helper\n"
+		ONOFFMATE_VERSION_STRTOT " - Hybernation, sleep, recycle bin, and power helper\n"
 		"\n"
 		"  OnOffMate [command]\n"
 		"\n"
 		"  Commands:\n"
-		"    ? or /? or h or -h or --help       Outputs this help\n"
-		"    /a                                 Aborts a task with a grace period\n"
-		"    Abort                              Aborts a task with a grace period\n"
-		"    Hybernate                          Hybernates computer instantly\n"
-		"    HybernateAfter <hs>                Hybernates computer after <hs> seconds\n"
-		"    Lock                               Locks computer instantly\n"
-		"    LockAfter <ls>                     Locks computer after <ls> seconds\n"
-		"    Logoff                             Logs off current user\n"
-		"    LogoffAfter <os>                   Logs off current user after <os> seconds\n"
-		"    PowerOff                           Shuts down and powers off computer instantly\n"
-		"    PowerOffAfter <ps>                 Shuts down and powers off computer in <ps> seconds\n"
+		"    ? or /? or h or -h or --help       Outputs this help.\n"
+		"    /a                                 Aborts a task with a grace period.\n"
+		"    Abort                              Aborts a task with a grace period.\n"
+		"    EmptyRecycleBin     [dir1] [...]   Empties either all recycle bins of all drives and\n"
+		"                                       folders, or for [dir1], [dir2], etc only.\n"
+		"    EmptyRecycleBinNC   [dir1] [...]   Empties recycle bins without confirmation.\n"
+		"    EmptyRecycleBinNCP  [dir1] [...]   Empties recycle bins without confirmation and\n"
+		"                                       progress bar.\n"
+		"    EmptyRecycleBinNCPS [dir1] [...]   Empties recycle bins without confirmation, progress.\n"
+		"                                       bar, and sound.\n"
+		"    EmptyRecycleBinNCS  [dir1] [...]   Empties recycle bins without confirmation and\n"
+		"                                       sound.\n"
+		"    EmptyRecycleBinNP   [dir1] [...]   Empties recycle bins without progress bar.\n"
+		"    EmptyRecycleBinNPS  [dir1] [...]   Empties recycle bins without progress bar and sound.\n"
+		"    EmptyRecycleBinNS   [dir1] [...]   Empties recycle bins without sound.\n"
+		"    Hybernate                          Hybernates computer instantly.\n"
+		"    HybernateAfter <hs>                Hybernates computer after <hs> seconds.\n"
+		"    Lock                               Locks computer instantly.\n"
+		"    LockAfter <ls>                     Locks computer after <ls> seconds.\n"
+		"    Logoff                             Logs off current user.\n"
+		"    LogoffAfter <os>                   Logs off current user after <os> seconds.\n"
+		"    PowerOff                           Shuts down and powers off computer instantly.\n"
+		"    PowerOffAfter <ps>                 Shuts down and powers off computer in <ps> seconds.\n"
 		"    PowerOffMsgAfter <ps> <msg>        Shuts down and powers off computer in <ps> seconds\n"
-		"                                       with message <msg>\n"
-		"    Reboot                             Restarts/reboots computer instantly\n"
-		"    RebootAfter <rs>                   Restarts/reboots computer after <rs> seconds\n"
-		"    Restart                            Restarts/reboots computer instantly\n"
-		"    RestartAfter <rs>                  Restarts/reboots computer after <rs> seconds\n"
-		"    Shutdown                           Shuts down and powers off computer instantly\n"
-		"    ShutdownAfter <ds>                 Shuts down and powers off computer in <ds> seconds\n"
+		"                                       with message <msg>.\n"
+		"    QueryRecycleBin     [dir1] [...]   Queries either all recycle bins of all drives and\n"
+		"                                       folders, or for [dir1], [dir2], etc only.\n"
+		"    Reboot                             Restarts/reboots computer instantly.\n"
+		"    RebootAfter <rs>                   Restarts/reboots computer after <rs> seconds.\n"
+		"    Restart                            Restarts/reboots computer instantly.\n"
+		"    RestartAfter <rs>                  Restarts/reboots computer after <rs> seconds.\n"
+		"    Shutdown                           Shuts down and powers off computer instantly.\n"
+		"    ShutdownAfter <ds>                 Shuts down and powers off computer in <ds> seconds.\n"
 		"    ShutdownMsgAfter <ds> <msg>        Shuts down and powers off computer in <ds> seconds\n"
 		"                                       with message <msg>\n"
-		"    Sleep                              Suspends (sleeps) computer instantly\n"
-		"    SleepAfter <ss>                    Suspends (sleeps) computer after <ss> seconds\n"
+		"    Sleep                              Suspends (sleeps) computer instantly.\n"
+		"    SleepAfter <ss>                    Suspends (sleeps) computer after <ss> seconds.\n"
 		"    SleepWakeupAfter <ws>              Suspends (sleeps) computer instantly and wakes it\n"
-		"                                       up again after <ws> seconds\n"
+		"                                       up again after <ws> seconds.\n"
 		"    SleepAfterWakeupAfter <ss> <ws>    Suspends (sleeps) computer in <ss> seconds and\n"
-		"                                       wakes it up again after <ws> seconds\n"
-		"    Suspend                            Suspends (sleeps) computer instantly\n"
-		"    SuspendAfter <ss>                  Suspends (sleeps) computer after <ss> seconds\n"
+		"                                       wakes it up again after <ws> seconds.\n"
+		"    Suspend                            Suspends (sleeps) computer instantly.\n"
+		"    SuspendAfter <ss>                  Suspends (sleeps) computer after <ss> seconds.\n"
 		"    SuspendWakeupAfter <ws>            Suspends (sleeps) computer instantly and wakes it\n"
-		"                                       up again after <ws> seconds\n"
+		"                                       up again after <ws> seconds.\n"
 		"    SuspendAfterWakeupAfter <ss> <ws>  Suspends (sleeps) computer in <ss> seconds and\n"
-		"                                       wakes it up again after <ws> seconds\n"
-		"    Ver                                Prints the version info\n"
-		"    Version                            Prints the version info\n"
+		"                                       wakes it up again after <ws> seconds.\n"
+		"    Ver                                Prints the version info.\n"
+		"    Version                            Prints the version info.\n"
 		"    WakeOnLAN <brip> <mac> [-f6]       Wakes the host with broadcast IP <brip> and MAC\n"
 		"                                       address <mac>. For example, if the IP address of the\n"
 		"                                       host to wake up is 192.168.0.97 and the subnet mask\n"
@@ -174,6 +188,116 @@ void outputActionLoggingOff (void)
 	consoleOutW (L"...");
 }
 
+void outputSHQUERYRBINFO (wchar_t *wc, SHQUERYRBINFO *pqi)
+{
+	wchar_t		wcNum [UBF_UINT64_SIZ];
+	wchar_t		wcSiz [UBF_UINT64_SIZ];
+
+	wstr_from_uint64 (wcNum, pqi->i64NumItems);
+	wstr_from_uint64 (wcSiz, pqi->i64Size);
+
+	consoleOutW (L"\nStats for recycle bin");
+	if (wc)
+	{
+		consoleOutW (L" \"");
+		consoleOutW (wc);
+		consoleOutW (L"\":");
+	} else
+		consoleOutW (L":");
+	consoleOutW (L"\nItems: ");
+	consoleOutW (wcNum);
+	consoleOutW (L"\nSize:  ");
+	consoleOutW (wcSiz);
+	consoleOutW (L" octets/bytes\n");
+}
+
+HRESULT qeryRecylceBin (wchar_t *name, SHQUERYRBINFO *pqi)
+{
+	HRESULT	hr;
+
+	hr = SHQueryRecycleBinW (name, pqi);
+	if (S_OK == hr)
+	{
+		outputSHQUERYRBINFO (name, pqi);
+	} else
+	{
+		consoleOutW (L"\nError querying recycle bin");
+		if (name)
+		{
+			consoleOutW (L" \"");
+			consoleOutW (name);
+			consoleOutW (L"\".\n");
+		} else
+			consoleOutW (L".\n ");
+	}
+	return hr;
+}
+
+bool queryRecycleBins (int *cArg, int nArgs, wchar_t **wcArgs)
+{
+	SHQUERYRBINFO	qi;
+	HRESULT	hr;
+	wchar_t *wcNext;
+	int		n = 0;
+
+	qi.cbSize = sizeof (SHQUERYRBINFO);
+	while (wcNext = nextArgumentW (cArg, nArgs, wcArgs))
+	{
+		++ n;
+		hr = qeryRecylceBin (wcNext, &qi);
+	}
+	if (!n)
+	{
+		hr = qeryRecylceBin (wcNext, &qi);
+	}
+	return S_OK == hr;
+}
+
+bool emptyRecycleBin (DWORD flags, int *cArg, int nArgs, WCHAR **wcArgs)
+{
+	HRESULT	hr;
+	wchar_t *wcNext;
+	int		n = 0;
+	while (wcNext = nextArgumentW (cArg, nArgs, wcArgs))
+	{
+		++ n;
+		hr = SHEmptyRecycleBinW (NULL, wcNext, flags);
+		if (S_OK == hr)
+		{
+			/*
+			consoleOutW (L"Recycle bin \"");
+			consoleOutW (wcNext);
+			consoleOutW (L"\" emptied. ");
+			*/
+		} else
+		{
+			if (E_UNEXPECTED == hr)
+			{
+				consoleOutW (L"Recycle bin \"");
+				consoleOutW (wcNext);
+				consoleOutW (L"\" already empty. ");
+			} else
+			{
+				consoleOutW (L"Error emptying recycle bin \"");
+				consoleOutW (wcNext);
+				consoleOutW (L"\". ");
+			}
+		}
+	}
+	if (!n)
+	{
+		hr = SHEmptyRecycleBinW (NULL, L"", flags);
+		if (S_OK == hr)
+			; //consoleOutW (L"Recycle bin emptied. ");
+		else
+		if (E_UNEXPECTED == hr)
+			consoleOutW (L"Recycle bin already empty. ");
+		else
+			consoleOutW (L"Error emptying recycle bin. ");
+	}
+	return S_OK == hr;
+}
+
 void ourmain (void)
 {
 	// The command-line arguments.
@@ -193,8 +317,9 @@ void ourmain (void)
 	uint64_t		n1, n2;
 
 	wchar_t			wzIP4asIP6 [U_WAKEONLAN_IPV6_SIZ]	=	U_WAKEONLAN_IPV6V4_PFXW
-															// Avoids memset ().
-															L"12345678901234567890";
+															// No idea why, but without this
+															//	MSVC generates a memset ().
+															L"\0";
 	const wchar_t	*wzIP								= wzIP4asIP6;
 
 	if (!ObtainPrivilege (SE_SHUTDOWN_NAME))
@@ -228,6 +353,46 @@ void ourmain (void)
 				bCmdComplete = true;
 				outputActionAborting ();
 				AbortShutdownOrFail ();
+			} else
+			if	(isArgumentIgnoreCaseW (L"EmptyRecycleBin", wcArgs [cArg]))
+			{
+				bCmdComplete = true;
+				emptyRecycleBin (0, &cArg, nArgs, wcArgs);
+			} else
+			if	(isArgumentIgnoreCaseW (L"EmptyRecycleBinNC", wcArgs [cArg]))
+			{
+				bCmdComplete = true;
+				emptyRecycleBin (SHERB_NOCONFIRMATION, &cArg, nArgs, wcArgs);
+			} else
+			if	(isArgumentIgnoreCaseW (L"EmptyRecycleBinNCP", wcArgs [cArg]))
+			{
+				bCmdComplete = true;
+				emptyRecycleBin (SHERB_NOCONFIRMATION | SHERB_NOPROGRESSUI, &cArg, nArgs, wcArgs);
+			} else
+			if	(isArgumentIgnoreCaseW (L"EmptyRecycleBinNCPS", wcArgs [cArg]))
+			{
+				bCmdComplete = true;
+				emptyRecycleBin (SHERB_NOCONFIRMATION | SHERB_NOPROGRESSUI | SHERB_NOSOUND, &cArg, nArgs, wcArgs);
+			} else
+			if	(isArgumentIgnoreCaseW (L"EmptyRecycleBinNCS", wcArgs [cArg]))
+			{
+				bCmdComplete = true;
+				emptyRecycleBin (SHERB_NOCONFIRMATION | SHERB_NOSOUND, &cArg, nArgs, wcArgs);
+			} else
+			if	(isArgumentIgnoreCaseW (L"EmptyRecycleBinNP", wcArgs [cArg]))
+			{
+				bCmdComplete = true;
+				emptyRecycleBin (SHERB_NOPROGRESSUI, &cArg, nArgs, wcArgs);
+			} else
+			if	(isArgumentIgnoreCaseW (L"EmptyRecycleBinNPS", wcArgs [cArg]))
+			{
+				bCmdComplete = true;
+				emptyRecycleBin (SHERB_NOPROGRESSUI | SHERB_NOSOUND, &cArg, nArgs, wcArgs);
+			} else
+			if	(isArgumentIgnoreCaseW (L"EmptyRecycleBinNS", wcArgs [cArg]))
+			{
+				bCmdComplete = true;
+				emptyRecycleBin (SHERB_NOSOUND, &cArg, nArgs, wcArgs);
 			} else
 			if	(isArgumentIgnoreCaseW (L"Hybernate", wcArgs [cArg]))
 			{
@@ -301,6 +466,11 @@ void ourmain (void)
 					} else
 						evalArg = enArgNumberTooBig;
 				}
+			} else
+			if	(isArgumentIgnoreCaseW (L"QueryRecycleBin",	wcArgs [cArg]))
+			{
+				bCmdComplete = true;
+				queryRecycleBins (&cArg, nArgs, wcArgs);
 			} else
 			if	(		isArgumentIgnoreCaseW (L"Reboot",	wcArgs [cArg])
 					||	isArgumentIgnoreCaseW (L"Restart",	wcArgs [cArg])
@@ -483,18 +653,18 @@ void ourmain (void)
 							consoleOutW (wzIP);
 							consoleOutW (L"\" with MAC address \"");
 							consoleOutW (wcMAC);
-							consoleOutW (L"\" on UDP port 9. ");
+							consoleOutW (L"\" on UDP port 9.\n");
 							break;
 						case wolretSyntaxMAC:
 							consoleOutW (L"Syntax error: \"");
 							consoleOutW (maca);
-							consoleOutW (L"\" is not a valid MAC address. ");
+							consoleOutW (L"\" is not a valid MAC address.\n");
 							bCmdComplete = true;
 							break;
 						case wolretSyntaxHst:
 							consoleOutW (L"Syntax error: \"");
 							consoleOutW (host);
-							consoleOutW (L"\" is not a valid broadcast IP address. ");
+							consoleOutW (L"\" is not a valid broadcast IP address.\n");
 							bCmdComplete = true;
 							break;
 						case wolretErrSend:
@@ -503,7 +673,7 @@ void ourmain (void)
 							consoleOutW (L"\" with MAC address \"");
 							makeUnifiedMACaddress (wcMAC, maca);
 							consoleOutW (wcMAC);
-							consoleOutW (L"\" on UDP port 9. ");
+							consoleOutW (L"\" on UDP port 9.\n");
 							break;
 						case wolretMissing:
 							break;
@@ -514,15 +684,17 @@ void ourmain (void)
 			{
 				++ cArg;
 				if (cArg < nArgs)
-					consoleOutW (L"Ignored argument(s):");
-				while (cArg < nArgs)
 				{
-					consoleOutW (L" \"");
-					consoleOutW (wcArgs [cArg]);
-					consoleOutW (L"\"");
-					++ cArg;
+					consoleOutW (L"Ignored argument(s):");
+					while (cArg < nArgs)
+					{
+						consoleOutW (L" \"");
+						consoleOutW (wcArgs [cArg]);
+						consoleOutW (L"\"");
+						++ cArg;
+					}
+					consoleOutW (L"\n");
 				}
-				consoleOutW (L"\n");
 			} else
 			{
 				switch (evalArg)

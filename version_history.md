@@ -1,6 +1,10 @@
 
 # OnOffMate version history
 
+Ver. 1.003 (2025-05-__)
+- Empty recycle bin.
+- Query recycle bin.
+
 Ver. 1.002 (2025-05-25)
 - Allow /a to abort tasks with a grace period to make it compatible with the shutdown command-line utility that comes with Windows.
 - Parameters Ver and Version added.
