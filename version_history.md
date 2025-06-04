@@ -1,7 +1,7 @@
 
 # OnOffMate version history
 
-Ver. 1.003 (2025-05-__)
+Ver. 1.003 (2025-06-04)
 - Empty recycle bin.
 - Query recycle bin.
 
