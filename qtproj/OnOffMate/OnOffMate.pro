@@ -135,9 +135,17 @@ linux:LIBS += \
 		-ldl
 
 HEADERS += \
-	../../src/externC.h \
-	../../src/WinAPI_U8.h
+	../../src/c/OnOffMateMain.h \
+	../../src/c/WakeOnLAN.h \
+	../../src/c/WinPowerHelpers.h \
+	../../src/c/WinRuntimeReplacements.h \
+	../../src/c/WinUTF8Console.h \
+	../../src/c/externC.h
 
 SOURCES += \
-	../../src/WinAPI_U8.c
+	../../src/c/OnOffMateMain.c \
+	../../src/c/WakeOnLAN.c \
+	../../src/c/WinPowerHelpers.c \
+	../../src/c/WinRuntimeReplacements.c \
+	../../src/c/WinUTF8Console.c
 

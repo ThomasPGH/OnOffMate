@@ -304,3 +304,70 @@ HANDLE StartThreadWakeupComputerAfter (DWORD dwSeconds)
 	}
 	return NULL;
 }
+
+/*
+	See
+	https://learn.microsoft.com/en-us/windows/win32/menurc/wm-syscommand .
+*/
+#define SC_SM_MONITOR_POWERON		(LPARAM) (-1)
+#define SC_SM_MONITOR_LOWPOWER		(LPARAM) (1)
+#define SC_SM_MONITOR_POWEROFF		(LPARAM) (2)
+
+bool MonitorLowPower (void)
+{
+	HANDLE h = GetDesktopWindow ();
+
+	LRESULT lr = SendMessageW (HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, SC_SM_MONITOR_LOWPOWER);
+	return 0 == lr;
+}
+
+bool MonitorPowerOff (void)
+{
+	HANDLE h = GetDesktopWindow ();
+
+	LRESULT lr = SendMessageW (HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, SC_SM_MONITOR_POWEROFF);
+	return 0 == lr;
+}
+
+bool MonitorPowerOn (void)
+{
+	/*
+		This is what used to work in the past but it seems not anymore.
+	*/
+	HANDLE	h	= GetDesktopWindow ();
+	// Windows 11 seems to hang when SendMessageW () is called with HWND_BROADCAST.
+	//LRESULT	lr	= SendMessageW (HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, SC_SM_MONITOR_POWERON);
+	LRESULT	lr	= PostMessageW (HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, SC_SM_MONITOR_POWERON);
+
+	/*
+		Moving the mouse by a pixel to the right and down should in theory do the trick,
+		but also doesn't seem to work.
+	*/
+	bool b = true;
+	/*
+	POINT p;
+	b = GetCursorPos (&p);
+	++ p.x;
+	++ p.y;
+	b &= SetCursorPos (p.x, p.y);
+	*/
+
+	/*
+		This is what Copilot suggests for "modern systems", and it seems to work
+		on at least the systems I've tested.
+	*/
+	// Simulate a key press.
+	//WORD	key			= VK_CONTROL;
+	//WORD	key			= VK_SPACE;
+	WORD	key			= VK_SHIFT;
+	INPUT	input;
+	input.type			= INPUT_KEYBOARD;
+	input.ki.wVk		= key;
+	input.ki.dwFlags	= 0;
+ 	UINT ui = SendInput (1, &input, sizeof (INPUT));
+	// Simulate a key release
+	input.ki.dwFlags	= KEYEVENTF_KEYUP;
+	ui += SendInput (1, &input, sizeof (INPUT));
+
+	return 0 == lr && b && 2 <= ui;
+}

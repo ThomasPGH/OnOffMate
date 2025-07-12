@@ -68,6 +68,7 @@ void outPutHelp (void)
 		ONOFFMATE_VERSION_STRTOT " - Hybernation, sleep, recycle bin, and power helper\n"
 		"\n"
 		"  OnOffMate [command]\n"
+		"  oom [command]\n"
 		"\n"
 		"  Commands:\n"
 		"    ? or /? or h or -h or --help       Outputs this help.\n"
@@ -78,7 +79,7 @@ void outPutHelp (void)
 		"    EmptyRecycleBinNC   [dir1] [...]   Empties recycle bins without confirmation.\n"
 		"    EmptyRecycleBinNCP  [dir1] [...]   Empties recycle bins without confirmation and\n"
 		"                                       progress bar.\n"
-		"    EmptyRecycleBinNCPS [dir1] [...]   Empties recycle bins without confirmation, progress.\n"
+		"    EmptyRecycleBinNCPS [dir1] [...]   Empties recycle bins without confirmation, progress\n"
 		"                                       bar, and sound.\n"
 		"    EmptyRecycleBinNCS  [dir1] [...]   Empties recycle bins without confirmation and\n"
 		"                                       sound.\n"
@@ -91,6 +92,17 @@ void outPutHelp (void)
 		"    LockAfter <ls>                     Locks computer after <ls> seconds.\n"
 		"    Logoff                             Logs off current user.\n"
 		"    LogoffAfter <os>                   Logs off current user after <os> seconds.\n"
+		"    MonitorLowPower                    Puts the monitor(s) in low power mode.\n"
+		"    MonitorLowPowerAfter <ps>          Puts the monitor(s) in low power mode after <ps>\n"
+		"                                       seconds.\n"
+		"    MonitorOff                         Switches the monitor(s) off instantly.\n"
+		"    MonitorOffAfter <ps>               Switches the monitor(s) off after <ps> seconds.\n"
+		"    MonitorOn                          Switches the monitor(s) on instantly.\n"
+		"    MonitorOnAfter <ps>                Switches the monitor(s) on after <ps> seconds.\n"
+		"    MonitorPowerOff                    Switches the monitor(s) off instantly.\n"
+		"    MonitorPowerOffAfter <ps>          Switches the monitor(s) off after <ps> seconds.\n"
+		"    MonitorPowerOn                     Switches the monitor(s) on instantly.\n"
+		"    MonitorPowerOnAfter <ps>           Switches the monitor(s) on after <ps> seconds.\n"
 		"    PowerOff                           Shuts down and powers off computer instantly.\n"
 		"    PowerOffAfter <ps>                 Shuts down and powers off computer in <ps> seconds.\n"
 		"    PowerOffMsgAfter <ps> <msg>        Shuts down and powers off computer in <ps> seconds\n"
@@ -125,6 +137,9 @@ void outPutHelp (void)
 		"                                       is 255.255.255.0, use 192.168.0.255 for <brip>.\n"
 		"                                       Argument -f6 forces IPv6 even if <brip> is IPv4.\n"
 		"\n"
+		"  Note that not every hardware supports all commands, that some options can be activated/\n"
+		"  deactivated in the BIOS, and that others depend on Windows settings.\n"
+		"\n"
 		"  The original behaviour of the Shutdown... commands (shutting down without power off) has\n"
 		"  been changed to be identical to the PowerOff... commands (shutting down and power off).\n"
 					);
@@ -134,6 +149,9 @@ const WCHAR wcActionAborting		[]	= L"Aborting shutdown/powerdown";
 const WCHAR wcActionHybernating		[]	= L"Hybernating workstation/computer";
 const WCHAR wcActionLoggingOff		[]	= L"Logging off";
 const WCHAR wcActionLocking			[]	= L"Locking workstation/computer";
+const WCHAR wcActionMonitorLowPower	[]	= L"Switching monitor(s) to low power mode";
+const WCHAR wcActionMonitorOff		[]	= L"Switching monitor(s) off";
+const WCHAR wcActionMonitorOn		[]	= L"Switching monitor(s) on";
 const WCHAR wcActionRestarting		[]	= L"Restarting workstation/computer";
 const WCHAR wcActionShuttingDown	[]	= L"Shutting down workstation/computer";
 const WCHAR wcActionSuspending		[]	= L"Suspending (sleeping) workstation/computer";
@@ -185,6 +203,24 @@ void outputActionLocking (void)
 void outputActionLoggingOff (void)
 {
 	consoleOutW (wcActionLoggingOff);
+	consoleOutW (L"...");
+}
+
+void outputActionMonitorLowPower (void)
+{
+	consoleOutW (wcActionMonitorLowPower);
+	consoleOutW (L"...");
+}
+
+void outputActionMonitorOff (void)
+{
+	consoleOutW (wcActionMonitorOff);
+	consoleOutW (L"...");
+}
+
+void outputActionMonitorOn (void)
+{
+	consoleOutW (wcActionMonitorOn);
 	consoleOutW (L"...");
 }
 
@@ -439,6 +475,69 @@ void ourmain (void)
 					LockThisComputerOrFail ();
 				}
 			} else
+			if	(isArgumentIgnoreCaseW (L"MonitorLowPower", wcArgs [cArg]))
+			{
+				bCmdComplete = true;
+				outputActionMonitorLowPower ();
+				MonitorLowPower ();
+				consoleOutW (L"\nMonitor(s) switched to low power mode.\n");
+			} else
+			if	(isArgumentIgnoreCaseW (L"MonitorLowPowerAfter", wcArgs [cArg]))
+			{
+				if (enArgIsNumber == (evalArg = compulsoryNumber (&n1, &cArg, nArgs, wcArgs)))
+				{
+					bCmdComplete = true;
+					waitForW (n1, wcActionMonitorLowPower);
+					MonitorLowPower ();
+					consoleOutW (L"\nMonitor(s) switched to low power mode.\n");
+				}
+			} else
+			if	(
+						isArgumentIgnoreCaseW (L"MonitorOff", wcArgs [cArg])
+					||	isArgumentIgnoreCaseW (L"MonitorPowerOff", wcArgs [cArg])
+				)
+			{
+				bCmdComplete = true;
+				outputActionMonitorOff ();
+				MonitorPowerOff ();
+				consoleOutW (L"\nMonitor(s) powered off.\n");
+			} else
+			if	(
+						isArgumentIgnoreCaseW (L"MonitorOffAfter", wcArgs [cArg])
+					||	isArgumentIgnoreCaseW (L"MonitorPowerOffAfter", wcArgs [cArg])
+				)
+			{
+				if (enArgIsNumber == (evalArg = compulsoryNumber (&n1, &cArg, nArgs, wcArgs)))
+				{
+					bCmdComplete = true;
+					waitForW (n1, wcActionMonitorOff);
+					MonitorPowerOff ();
+					consoleOutW (L"\nMonitor(s) powered off.\n");
+				}
+			} else
+			if	(
+						isArgumentIgnoreCaseW (L"MonitorOn", wcArgs [cArg])
+					||	isArgumentIgnoreCaseW (L"MonitorPowerOn", wcArgs [cArg])
+				)
+			{
+				bCmdComplete = true;
+				outputActionMonitorOn ();
+				MonitorPowerOn ();
+				consoleOutW (L"\nMonitor(s) powered on.\n");
+			} else
+			if	(
+						isArgumentIgnoreCaseW (L"MonitorOnAfter", wcArgs [cArg])
+					||	isArgumentIgnoreCaseW (L"MonitorPowerOnAfter", wcArgs [cArg])
+				)
+			{
+				if (enArgIsNumber == (evalArg = compulsoryNumber (&n1, &cArg, nArgs, wcArgs)))
+				{
+					bCmdComplete = true;
+					waitForW (n1, wcActionMonitorOn);
+					MonitorPowerOn ();
+					consoleOutW (L"\nMonitor(s) powered on.\n");
+				}
+			} else
 			if	(isArgumentIgnoreCaseW (L"PowerOff", wcArgs [cArg]))
 			{
 				bCmdComplete = true;
@@ -685,7 +784,7 @@ void ourmain (void)
 				++ cArg;
 				if (cArg < nArgs)
 				{
-					consoleOutW (L"Ignored argument(s):");
+					consoleOutW (L"\nIgnored argument(s):");
 					while (cArg < nArgs)
 					{
 						consoleOutW (L" \"");

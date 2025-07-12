@@ -233,6 +233,27 @@ bool WakeupComputerAfter (DWORD dwSeconds)
 HANDLE StartThreadWakeupComputerAfter (DWORD dwSeconds)
 ;
 
+/*
+	MonitorLowPower
+
+*/
+bool MonitorLowPower (void)
+;
+
+/*
+	MonitorPowerOff
+
+*/
+bool MonitorPowerOff (void)
+;
+
+/*
+	MonitorPowerOn
+
+*/
+bool MonitorPowerOn (void)
+;
+
 EXTERN_C_END
 
 #endif														// Of #ifndef WINPOWERHELPERS_H.

@@ -190,7 +190,7 @@ bool isArgumentW (const WCHAR *wcFixed, WCHAR *wcArgument)
 
 	if (lFixed == lArgum)
 	{
-		return !memcmpU (wcFixed, wcArgument, lFixed);
+		return !memcmpU (wcFixed, wcArgument, sizeof (WCHAR) * lFixed);
 	}
 	return false;
 }

@@ -1,6 +1,10 @@
 
 # OnOffMate version history
 
+Ver. 1.004 (2025-07-12)
+- Monitor options added.
+- Copy of OnOffMate.exe called oom.exe because this is easier to type.
+
 Ver. 1.003 (2025-06-04)
 - Empty recycle bin.
 - Query recycle bin.
